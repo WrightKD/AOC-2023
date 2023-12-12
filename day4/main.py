@@ -1,24 +1,48 @@
 data = open('input.txt')
 
-total_points = 0
+scratchcards = []
 
 for line in data:
     win_count = 0
 
     row = line.rstrip()
-
     win_nums, nums = row.split(' | ')
-
     card, win_nums = win_nums.split(': ')
-
     win_nums = win_nums.split()
     nums = nums.split()
-    
-    for i in win_nums:
-        if i in nums:
+
+    scratchcards.append({"win_nums" : win_nums, "nums" : nums, "card" : card})
+
+
+def get_win_count(scratchcard):
+    win_count = 0
+
+    win_nums = scratchcard["win_nums"]
+    nums = scratchcard["nums"]
+
+    for win in win_nums:
+        if win in nums:
             win_count += 1
 
-    if win_count > 0:
-        total_points += 2**(win_count-1)
+    return win_count
 
-print("Total Points : ", total_points)
+
+original_scratchcards = len(scratchcards)
+
+for i in range(0, len(scratchcards)):
+    scratchcards[i]["win_count"] = get_win_count(scratchcards[i])
+
+
+def get_scratchcards(scratchcards):
+
+    new_scratchcards = []
+
+    for i in range(0,len(scratchcards)):
+        win_count = scratchcards[i]['win_count']
+        new_scratchcards += get_scratchcards(scratchcards[i+1:i+win_count+1])
+
+    scratchcards += new_scratchcards
+    return scratchcards
+        
+
+#print(len(get_scratchcards(scratchcards))+original_scratchcards)
